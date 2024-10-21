@@ -23,7 +23,7 @@ function Join() {
     const addr = addrRef.current.value;
 
     try {
-      const res = await axios.post("http://localhost:3100/porson", {
+      const res = await axios.post("http://localhost:3100/porson/join", {
         id,
         name,
         gender,

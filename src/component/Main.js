@@ -10,32 +10,22 @@ import {
   TableRow,
   Paper,
   Typography,
-  Button,
-  CircularProgress,
-  Snackbar,
 } from '@mui/material';
-import Alert from '@mui/material/Alert';
 
 const Main = () => {
   const [persons, setPersons] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     async function fetchPersons() {
-      setLoading(true);
       try {
-        const res = await axios.get('http://localhost:3100/person');
+        const res = await axios.get('http://localhost:3100/person'); // API 엔드포인트 변경
         if (res.data.success) {
           setPersons(res.data.list);
         } else {
-          setError("Failed to fetch persons");
+          console.log("에러");
         }
       } catch (err) {
-        setError("Error fetching data");
-      } finally {
-        setLoading(false);
+        console.log("에러:", err);
       }
     }
     fetchPersons();
@@ -43,20 +33,13 @@ const Main = () => {
 
   const fnDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3100/person/${id}`);
-      setPersons((prev) => prev.filter(person => person.id !== id));
-      setSuccessMessage("User deleted successfully");
+      await axios.delete(`http://localhost:3100/person/${id}`); // API 엔드포인트 변경
+      setPersons(persons.filter(person => person.id !== id));
+      console.log("삭제되었습니다");
     } catch (err) {
-      setError("Error deleting user");
+      console.log("오류가 발생했습니다.", err);
     }
   };
-
-  const handleCloseSnackbar = () => {
-    setSuccessMessage('');
-    setError(null);
-  };
-
-  if (loading) return <CircularProgress />;
 
   return (
     <Box padding={3} sx={{ backgroundColor: '#f0f4f8' }}>
@@ -84,26 +67,13 @@ const Main = () => {
                 <TableCell>{person.gender}</TableCell>
                 <TableCell>{person.phone}</TableCell>
                 <TableCell>{person.addr}</TableCell>
-                <TableCell>
-                  <Button variant="outlined" color="error" onClick={() => fnDelete(person.id)}>
-                    삭제
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  <Button variant="outlined" color="primary">
-                    수정
-                  </Button>
-                </TableCell>
+                <TableCell><button onClick={()=>{fnDelete(person.id)}}>삭제</button></TableCell>
+                <TableCell><button>수정</button></TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <Snackbar open={Boolean(successMessage || error)} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={error ? "error" : "success"}>
-          {error || successMessage}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };
